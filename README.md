@@ -66,6 +66,10 @@ Production: https://your-api-domain.com/api
 ```
 
 ## API Endpoints
+You can refer swagger api documentation at
+```
+https://upraised-assignment-47gq.onrender.com/api-docs
+```
 
 ### Authentication Endpoints
 
