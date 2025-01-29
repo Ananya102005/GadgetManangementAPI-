@@ -21,7 +21,7 @@ export const updateGadget = async (
       return;
     }
     // check if any of the fields exist
-    if (!name || !status) {
+    if (!name && !status) {
       res.status(400).json({
         error: "No fields to update",
         success: false,
