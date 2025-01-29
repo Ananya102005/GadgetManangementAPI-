@@ -4,6 +4,34 @@ import { gadgetStatus, Gadget } from "@prisma/client";
 
 const client = prismaClientSingleton();
 
+/**
+ * @swagger
+ * /api/gadgets:
+ *   get:
+ *     summary: Get all gadgets by status
+ *     tags: [Gadgets]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [AVAILABLE, DECOMMISSIONED, DEPLOYED, DESTROYED]
+ *         required: true
+ *         description: Status of gadgets to retrieve
+ *     responses:
+ *       200:
+ *         description: List of gadgets with success probability
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *       400:
+ *         description: Invalid status value
+ *       500:
+ *         description: Server error
+ */
 export const getGadgets = async (
   req: Request,
   res: Response

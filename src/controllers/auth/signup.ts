@@ -7,6 +7,88 @@ import { signupPayloadSchema } from "../../validations/auth.validation";
 const client = prismaClientSingleton();
 
 const saltRounds = 10;
+
+/**
+ * @swagger
+ * /api/auth/signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - confirmPassword
+ *               - role
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 20
+ *                 pattern: ^[^!@#$%^&*(){}\[\]\\\.;'",.<>/?`~|0-9]*$
+ *                 description: Only alphabets allowed
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 maxLength: 50
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 maxLength: 30
+ *               confirmPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Must match password field
+ *               role:
+ *                 type: string
+ *                 enum: [ADMIN, USER]
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       409:
+ *         description: Email already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     // Validate the request body

@@ -5,6 +5,29 @@ import { Gadget } from "@prisma/client";
 
 const client = prismaClientSingleton();
 
+/**
+ * @swagger
+ * /api/gadgets:
+ *   post:
+ *     summary: Create a new gadget
+ *     tags: [Gadgets]
+ *     responses:
+ *       201:
+ *         description: Gadget created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Gadget'
+ *       500:
+ *         description: Server error
+ */
 export const postGadget = async (
   req: Request,
   res: Response
@@ -12,13 +35,13 @@ export const postGadget = async (
   try {
     // Generate a unique gadget name
     const gadgetName: string = await generateGadgetName(client);
-    
+
     const gadget: Gadget = await client.gadget.create({
       data: {
         name: gadgetName,
       },
     });
-    
+
     res.status(201).json({
       message: "Gadget added successfully",
       data: gadget,

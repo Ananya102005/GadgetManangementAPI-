@@ -4,6 +4,33 @@ import { gadgetStatus, Gadget } from "@prisma/client";
 
 const client = prismaClientSingleton();
 
+/**
+ * @swagger
+ * /api/gadgets:
+ *   delete:
+ *     summary: Decommission a gadget
+ *     tags: [Gadgets]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Gadget decommissioned successfully
+ *       400:
+ *         description: Gadget already decommissioned
+ *       404:
+ *         description: Gadget not found
+ *       500:
+ *         description: Server error
+ */
 export const deleteGadget = async (
   req: Request,
   res: Response

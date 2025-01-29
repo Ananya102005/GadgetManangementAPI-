@@ -4,6 +4,31 @@ import { AuthRequest } from "../../middlewares/auth";
 import { Gadget } from "@prisma/client";
 const client = prismaClientSingleton();
 
+/**
+ * @swagger
+ * /api/gadgets/{id}/self-destruct:
+ *   post:
+ *     summary: Self destruct a gadget
+ *     tags: [Gadgets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Gadget ID
+ *     responses:
+ *       200:
+ *         description: Gadget destroyed successfully
+ *       400:
+ *         description: Gadget is already destroyed or decommissioned
+ *       404:
+ *         description: Gadget not found
+ *       500:
+ *         description: Server error
+ */
 export const selfDestruct = async (
   req: AuthRequest,
   res: Response

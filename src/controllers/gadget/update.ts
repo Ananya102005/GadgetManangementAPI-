@@ -4,6 +4,38 @@ import { gadgetStatus, Gadget } from "@prisma/client";
 
 const client = prismaClientSingleton();
 
+/**
+ * @swagger
+ * /api/gadgets:
+ *   put:
+ *     summary: Update a gadget
+ *     tags: [Gadgets]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [AVAILABLE, DECOMMISSIONED, DEPLOYED, DESTROYED]
+ *     responses:
+ *       200:
+ *         description: Gadget updated successfully
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Gadget not found
+ *       500:
+ *         description: Server error
+ */
 export const updateGadget = async (
   req: Request,
   res: Response

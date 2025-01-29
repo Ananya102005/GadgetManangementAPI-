@@ -11,13 +11,57 @@ if (!JWT_SECRET) {
 
 const client = prismaClientSingleton();
 
+/**
+ * @swagger
+ * /api/auth/signin:
+ *   post:
+ *     summary: Sign in a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                     message:
+ *                       type: string
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
 export const signin = async (req: Request, res: Response): Promise<void> => {
   try {
     // Validate request body
     const { error, value } = signinPayloadSchema.validate(req.body);
 
     if (error) {
-       res.status(400).json({
+      res.status(400).json({
         success: false,
         data: null,
         error: error.message,
@@ -36,7 +80,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!user) {
-       res.status(401).json({
+      res.status(401).json({
         success: false,
         data: null,
         error: "Invalid credentials",
@@ -48,7 +92,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
     const isPasswordValid = await bcrypt.compare(value.password, user.password);
 
     if (!isPasswordValid) {
-       res.status(401).json({
+      res.status(401).json({
         success: false,
         data: null,
         error: "Invalid credentials",
@@ -79,7 +123,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
     };
 
     // Set cookie and send response
-     res
+    res
       .cookie("token", token, cookieOptions)
       .status(200)
       .json({
