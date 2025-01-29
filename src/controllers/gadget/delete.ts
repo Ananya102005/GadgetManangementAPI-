@@ -23,6 +23,14 @@ export const deleteGadget = async (
       });
       return;
     }
+    // check if the gadget is already decommissioned
+    if (gadget.status === gadgetStatus.DECOMMISSIONED) {
+      res.status(400).json({
+        error: "Gadget already decommissioned",
+        success: false,
+      });
+      return;
+    }
     const updatedGadget: Gadget = await client.gadget.update({
       where: {
         id: id,
