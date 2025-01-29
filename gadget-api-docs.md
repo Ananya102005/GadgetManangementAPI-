@@ -26,7 +26,7 @@ All requests must include a valid JWT token as an HTTP-only cookie. The token is
 
 ## Base URL
 ```
-http://your-api-domain.com/api
+https://upraised-assignment-47gq.onrender.com/api
 ```
 
 ## Authentication Endpoints

@@ -361,7 +361,6 @@ enum UserRole {
 
 ### Request Security
 - CORS protection
-- Rate limiting
 - Input validation using Joi
 - SQL injection protection via Prisma ORM
 
@@ -376,8 +375,8 @@ enum UserRole {
 ### Local Development
 1. Clone repository
 ```bash
-git clone https://github.com/your-repo/imf-gadget-api.git
-cd imf-gadget-api
+git clone https://github.com/amoghar29/upraised-assignment.git
+cd upraised-assignment
 ```
 
 2. Install dependencies
