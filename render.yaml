@@ -13,3 +13,9 @@ services:
         sync: false
       - key: PORT
         value: 3000
+    buildFilter:
+      paths:
+        - src/**/*.ts
+        - package.json
+        - yarn.lock
+        - tsconfig.json
