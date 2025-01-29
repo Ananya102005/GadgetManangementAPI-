@@ -55,7 +55,8 @@ export const updateGadget = async (
       : error.message.split("\n").pop().trim();
     if (prismaErrorMessage.includes("Expected gadgetStatus")) {
       res.status(400).json({
-        error: "Invalid status value. Expected one of: AVAILABLE, DECOMMISSIONED, DEPLOYED, DESTROYED",
+        error:
+          "Invalid status value. Expected one of: AVAILABLE, DECOMMISSIONED, DEPLOYED, DESTROYED",
         success: false,
       });
     } else {
