@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import prismaClientSingleton from "../../db";
 import { UserRole } from "@prisma/client";
 import { signupPayloadSchema } from "../../validations/auth.validation";
+import { SignupRequest, AuthResponse } from "../../types/auth.types";
 
 const client = prismaClientSingleton();
 
@@ -89,12 +90,19 @@ const saltRounds = 10;
  *                 error:
  *                   type: string
  */
-export const signup = async (req: Request, res: Response): Promise<void> => {
+export const signup = async (
+  req: Request<SignupRequest>,
+  res: Response<AuthResponse>
+): Promise<void> => {
   try {
     // Validate the request body
     const { error, value } = signupPayloadSchema.validate(req.body);
     if (error) {
-      res.status(400).json({ error: error.message });
+      res.status(400).json({
+        success: false,
+        error: error.message,
+        data: null,
+      });
       return;
     }
     // Check if the email is already used
@@ -102,7 +110,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       where: { email: value.email },
     });
     if (isEmailAlreadyUsed) {
-      res.status(409).json({ error: "Email already used" });
+      res.status(409).json({
+        success: false,
+        error: "Email already used",
+        data: null,
+      });
       return;
     }
 
@@ -121,10 +133,15 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json({
       success: true,
-      message: "User signed up successfully. Signin to continue",
+      error: "User signed up successfully. Signin to continue",
+      data: null,
     });
   } catch (error) {
     // handle any errors that occur during the process
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({
+      success: false,
+      error: "Internal server error",
+      data: null,
+    });
   }
 };

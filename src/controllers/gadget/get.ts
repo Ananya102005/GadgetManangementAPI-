@@ -16,8 +16,8 @@ const client = prismaClientSingleton();
  *         schema:
  *           type: string
  *           enum: [AVAILABLE, DECOMMISSIONED, DEPLOYED, DESTROYED]
- *         required: true
- *         description: Status of gadgets to retrieve
+ *         required: false
+ *         description: Optional status filter for gadgets
  *     responses:
  *       200:
  *         description: List of gadgets with success probability
@@ -36,20 +36,23 @@ export const getGadgets = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const status: gadgetStatus = req.query.status as gadgetStatus;
+  const status = req.query.status as gadgetStatus | undefined;
   try {
-    const queryCondition: gadgetStatus = status;
-    // find all gadgets with the given status
+    // Modify where clause based on whether status is provided
     const gadgets: Gadget[] = await client.gadget.findMany({
-      where: {
-        status: queryCondition,
-      },
+      where: status
+        ? {
+            status: status,
+          }
+        : {},
     });
+
     // check if no gadgets are found
     if (gadgets.length === 0) {
-      res
-        .status(200)
-        .json({ message: `No gadgets found with status ${status}` });
+      const message = status
+        ? `No gadgets found with status ${status}`
+        : "No gadgets found";
+      res.status(200).json({ message });
       return;
     }
     // return the gadgets with a random success probability

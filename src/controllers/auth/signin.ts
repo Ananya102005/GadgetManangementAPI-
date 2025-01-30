@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prismaClientSingleton from "../../db";
 import { signinPayloadSchema } from "../../validations/auth.validation";
+import { SigninRequest, AuthResponse } from "../../types/auth.types";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -55,7 +56,7 @@ const client = prismaClientSingleton();
  *       500:
  *         description: Server error
  */
-export const signin = async (req: Request, res: Response): Promise<void> => {
+export const signin = async (req: Request<SigninRequest>, res: Response<AuthResponse>): Promise<void> => {
   try {
     // Validate request body
     const { error, value } = signinPayloadSchema.validate(req.body);
