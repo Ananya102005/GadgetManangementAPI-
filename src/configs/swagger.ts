@@ -10,12 +10,12 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${4001}`,
-        description: "Development server",
-      },
-      {
         url: "https://upraised-assignment-47gq.onrender.com",
         description: "Production server",
+      },
+      {
+        url: `http://localhost:${4001}`,
+        description: "Development server",
       },
     ],
     components: {
