@@ -10,11 +10,11 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${4001}/api`,
+        url: `http://localhost:${4001}`,
         description: "Development server",
       },
       {
-        url: "https://upraised-assignment-47gq.onrender.com/api",
+        url: "https://upraised-assignment-47gq.onrender.com",
         description: "Production server",
       },
     ],
@@ -32,7 +32,7 @@ const options = {
         },
       },
       schemas: {
-          Gadget: {
+        Gadget: {
           type: "object",
           properties: {
             id: {
