@@ -7,7 +7,7 @@ const client = prismaClientSingleton();
 /**
  * @swagger
  * /api/gadgets:
- *   put:
+ *   patch:
  *     summary: Update a gadget
  *     tags: [Gadgets]
  *     requestBody:
