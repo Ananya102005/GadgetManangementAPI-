@@ -14,7 +14,7 @@ const options = {
         description: "Production server",
       },
       {
-        url: `http://localhost:${4001}`,
+        url: `http://localhost:${process.env.PORT}`,
         description: "Development server",
       },
     ],

@@ -31,9 +31,11 @@ const client = prismaClientSingleton();
  *               email:
  *                 type: string
  *                 format: email
+ *                 example: john.doe@example.com
  *               password:
  *                 type: string
  *                 format: password
+ *                 example: "Password123!"
  *     responses:
  *       200:
  *         description: Login successful
@@ -44,19 +46,85 @@ const client = prismaClientSingleton();
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   example: true
  *                 data:
  *                   type: object
  *                   properties:
  *                     token:
  *                       type: string
+ *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *                     message:
  *                       type: string
+ *                       example: "Login successful"
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid email format"
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       401:
  *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid password"
+ *                 data:
+ *                   type: null
+ *                   example: null
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "User does not exist"
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       500:
- *         description: Server error
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "An unexpected error occurred"
+ *                 data:
+ *                   type: null
+ *                   example: null
  */
-export const signin = async (req: Request<SigninRequest>, res: Response<AuthResponse>): Promise<void> => {
+export const signin = async (
+  req: Request<SigninRequest>,
+  res: Response<AuthResponse>
+): Promise<void> => {
   try {
     // Validate request body
     const { error, value } = signinPayloadSchema.validate(req.body);
@@ -81,10 +149,10 @@ export const signin = async (req: Request<SigninRequest>, res: Response<AuthResp
     });
 
     if (!user) {
-      res.status(401).json({
+      res.status(404).json({
         success: false,
         data: null,
-        error: "Invalid credentials",
+        error: "User does not exist",
       });
       return;
     }
@@ -96,8 +164,9 @@ export const signin = async (req: Request<SigninRequest>, res: Response<AuthResp
       res.status(401).json({
         success: false,
         data: null,
-        error: "Invalid credentials",
+        error: "Invalid password",
       });
+      return;
     }
 
     // Generate JWT token
@@ -129,9 +198,9 @@ export const signin = async (req: Request<SigninRequest>, res: Response<AuthResp
       .status(200)
       .json({
         success: true,
+        message: "Login successful",
         data: {
           token,
-          message: "Login successful",
         },
       });
   } catch (error) {
@@ -139,7 +208,7 @@ export const signin = async (req: Request<SigninRequest>, res: Response<AuthResp
     res.status(500).json({
       success: false,
       data: null,
-      error: "An unexpected error occurred",
+      error: "Internal server error",
     });
   }
 };

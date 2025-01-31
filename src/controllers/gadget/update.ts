@@ -21,20 +21,78 @@ const client = prismaClientSingleton();
  *             properties:
  *               id:
  *                 type: string
+ *                 example: "123e4567-e89b-12d3-a456-426614174000"
  *               name:
  *                 type: string
+ *                 example: "The Knight - 37% success probability"
  *               status:
  *                 type: string
  *                 enum: [AVAILABLE, DECOMMISSIONED, DEPLOYED, DESTROYED]
+ *                 example: "DEPLOYED"
  *     responses:
  *       200:
  *         description: Gadget updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Gadget updated successfully"
+ *                 data:
+ *                   $ref: '#/components/schemas/Gadget'
  *       400:
  *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Gadget ID is required"
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       404:
  *         description: Gadget not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Gadget not found"
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       500:
- *         description: Server error
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ *                 data:
+ *                   type: null
+ *                   example: null
  */
 export const updateGadget = async (
   req: Request,

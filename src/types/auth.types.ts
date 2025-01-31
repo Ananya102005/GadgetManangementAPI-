@@ -13,6 +13,7 @@ export interface SignupRequest {
 
 export interface AuthResponse {
   success: boolean;
+  message?: string;
   error?: string;
-  data: { token: string; message: string } | null;
+  data: { token: string } | null;
 }

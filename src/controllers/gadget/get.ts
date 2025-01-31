@@ -18,19 +18,55 @@ const client = prismaClientSingleton();
  *           enum: [AVAILABLE, DECOMMISSIONED, DEPLOYED, DESTROYED]
  *         required: false
  *         description: Optional status filter for gadgets
+ *         example: "AVAILABLE"
  *     responses:
  *       200:
  *         description: List of gadgets with success probability
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: string
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: "No gadgets found with status AVAILABLE"
+ *                 - type: array
+ *                   items:
+ *                     type: string
+ *                     example: "The Knight - 75% success probability"
  *       400:
  *         description: Invalid status value
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid status value. Expected one of: AVAILABLE, DECOMMISSIONED, DEPLOYED, DESTROYED"
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       500:
- *         description: Server error
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ *                 data:
+ *                   type: null
+ *                   example: null
  */
 export const getGadgets = async (
   req: Request,

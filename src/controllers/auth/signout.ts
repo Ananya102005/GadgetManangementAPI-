@@ -16,15 +16,31 @@ import { Request, Response } from "express";
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
  *                 message:
  *                   type: string
  *                   example: "Logged out successfully"
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       401:
  *         description: Not authenticated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Authentication required"
+ *                 data:
+ *                   type: null
+ *                   example: null
  */
 export const signout = async (req: Request, res: Response): Promise<void> => {
   res.clearCookie("token");
