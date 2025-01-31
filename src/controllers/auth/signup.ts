@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import prismaClientSingleton from "../../db";
 import { UserRole } from "@prisma/client";
 import { signupPayloadSchema } from "../../validations/auth.validation";
@@ -8,6 +9,7 @@ import { SignupRequest, AuthResponse } from "../../types/auth.types";
 const client = prismaClientSingleton();
 
 const saltRounds = 10;
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 /**
  * @swagger
@@ -26,7 +28,6 @@ const saltRounds = 10;
  *               - email
  *               - password
  *               - confirmPassword
- *               - role
  *             properties:
  *               name:
  *                 type: string
@@ -34,22 +35,28 @@ const saltRounds = 10;
  *                 maxLength: 20
  *                 pattern: ^[^!@#$%^&*(){}\[\]\\\.;'",.<>/?`~|0-9]*$
  *                 description: Only alphabets allowed
+ *                 example: "John Doe"
  *               email:
  *                 type: string
  *                 format: email
  *                 maxLength: 50
+ *                 example: "john.doe@example.com"
  *               password:
  *                 type: string
  *                 format: password
  *                 minLength: 8
  *                 maxLength: 30
+ *                 example: "Password123!"
  *               confirmPassword:
  *                 type: string
  *                 format: password
  *                 description: Must match password field
+ *                 example: "Password123!"
  *               role:
  *                 type: string
  *                 enum: [ADMIN, USER]
+ *                 default: USER
+ *                 example: "USER"
  *     responses:
  *       201:
  *         description: User created successfully
@@ -60,8 +67,16 @@ const saltRounds = 10;
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   example: true
  *                 message:
  *                   type: string
+ *                   example: "User signed up successfully. Signin to continue"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OTAiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
  *       400:
  *         description: Validation error
  *         content:
@@ -69,8 +84,15 @@ const saltRounds = 10;
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
  *                 error:
  *                   type: string
+ *                   example: "Password must be at least 8 characters long"
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       409:
  *         description: Email already exists
  *         content:
@@ -78,17 +100,31 @@ const saltRounds = 10;
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
  *                 error:
  *                   type: string
+ *                   example: "Email already used"
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       500:
- *         description: Server error
+ *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
  *                 error:
  *                   type: string
+ *                   example: "Internal server error"
+ *                 data:
+ *                   type: null
+ *                   example: null
  */
 export const signup = async (
   req: Request<SignupRequest>,
@@ -122,7 +158,7 @@ export const signup = async (
     const hashedPassword = await bcrypt.hash(value.password, saltRounds);
 
     // Create the user
-    await client.user.create({
+    const user = await client.user.create({
       data: {
         name: value.name,
         email: value.email,
@@ -130,11 +166,28 @@ export const signup = async (
         role: value.role as UserRole,
       },
     });
-
-    res.status(201).json({
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+      JWT_SECRET,
+      {
+        expiresIn: "1h",
+        algorithm: "HS256",
+      }
+    );
+    res.status(201).cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict" as const,
+      expires: new Date(Date.now() + 1 * 60 * 60 * 1000),
+      path: "/",
+    }).json({
       success: true,
-      error: "User signed up successfully. Signin to continue",
-      data: null,
+      message: "User signed up successfully",
+      data: { token },
     });
   } catch (error) {
     // handle any errors that occur during the process
